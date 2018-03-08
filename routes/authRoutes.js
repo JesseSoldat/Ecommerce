@@ -1,9 +1,12 @@
+const passportService = require('../services/passport');
 
-module.exports = (app, User) => {
+module.exports = (app, User, passport) => {
 
 
   app.get('/signup', (req, res, next) => {
-    res.render('accounts/signup');
+    res.render('accounts/signup', {
+      errors: req.flash('errors')
+    });
   });
 
   app.post('/signup', async (req, res, next) => {
@@ -15,11 +18,12 @@ module.exports = (app, User) => {
     try {
       const existingUser = await User.findOne({ email }); 
       if(existingUser) {
+        req.flash('errors', 'Account with that email address already exists');
         res.redirect('/signup');
       }
       await user.save((err, user) => {
         if(err) return next(err);
-        res.redirect('/');
+        res.redirect('/profile');
       });
     } 
     catch (err) {
@@ -27,5 +31,22 @@ module.exports = (app, User) => {
     }
     
     
+  });
+
+  app.get('/login', (req, res, next) => {
+    if(req.user) return res.redirect('/');
+    res.render('accounts/login', {
+      errors: req.flash('errors')
+    });
+  });
+
+  app.post('/login', passport.authenticate('local-login', {
+    successRedirect: '/profile',
+    failureRedirect: '/login',
+    failureFlash: true
+  }));
+
+  app.get('/profile', (req, res, next) => {
+    res.render('accounts/profile');
   });
 }
