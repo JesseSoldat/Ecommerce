@@ -8,6 +8,9 @@ module.exports = (app, Category, Product) => {
  
     Product
       .find({category: id})
+      //if data type is an object _id
+      //can get all the data in category as well
+      //.category.name
       .populate('category')
       .exec((err, products) => {
         if(err) return next(err);
@@ -15,6 +18,15 @@ module.exports = (app, Category, Product) => {
           products
         })
       });
- 
+  });
+
+  app.get('/product/:id', async (req, res, next) => {
+    try {
+      const product = await Product.findById({_id: req.params.id});
+      res.render('main/product', {product});
+    } 
+    catch(err) {
+      return next(err);
+    }
   });
 }

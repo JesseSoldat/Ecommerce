@@ -1,6 +1,7 @@
 body {
   padding-top: 100px;
   position: relative;
+  height: 100vh;
 }
 
 footer {

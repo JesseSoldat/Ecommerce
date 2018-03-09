@@ -1,0 +1,32 @@
+<% layout('layout') -%>
+
+<div class="container">
+  <div class="row">
+    <div class="col-md-4">
+      <img src="<%= product.image %>" alt="product">
+    </div>
+
+    <div class="col-md-4"></div>
+
+    <div class="col-md-4">
+      <h3><%= product.name %></h3>
+      <h1><%= product.price %></h1>
+
+      <form action="" method="post">
+        <div class="btn-group" role="group">
+          <input type="hidden" name="quantity" id="quantity" value="1" />
+          <button class="btn btn-default" type="button" id="minus">
+            -
+          </button>
+          <button type="button" class="btn btn-default" id="total">
+            1
+          </button>
+          <button type="button" class="btn btn-default" id="plus">
+            +
+          </button>
+        </div>
+      </form>
+
+    </div>
+  </div>
+</div>
