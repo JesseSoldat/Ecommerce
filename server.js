@@ -11,6 +11,8 @@ const ejs = require('ejs');
 const engine = require('ejs-mate');
 
 const User = require('./models/user');
+const Category = require('./models/category');
+const Product = require('./models/product');
 
 const app = express();
 
@@ -35,11 +37,27 @@ app.use(session({
 app.use(flash());
 app.use(passport.initialize());
 app.use(passport.session());
+app.use((req, res, next) => {
+  res.locals.user = req.user;
+  next();
+});
+app.use(async (req, res, next) => {
+  try {
+    const categories = await Category.find({});
+    res.locals.categories = categories;
+    next(); 
+  } 
+  catch (err) {
+    next();
+  }
+});
 app.engine('ejs', engine);
 app.set('view engine', 'ejs');
 
 require('./routes/authRoutes')(app, User, passport);
-require('./routes/mainRoutes')(app);
+require('./routes/mainRoutes')(app, Category, Product);
+require('./routes/adminRoutes')(app, Category, Product);
+require('./api/api')(app, Category, Product);
 
 app.listen(process.env.PORT, (err) => {
   if(err) throw errr;
