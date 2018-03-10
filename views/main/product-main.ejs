@@ -1,5 +1,5 @@
 <% layout('layout') -%>
-<div class="jumbotron" id="navbar-gap">
+<div class="jumbotron" class="jumbotron-navbar-gap">
   <div class="container">
     <h1 class="text-center">Find your favourite Product</h1>
     <p class="text-center">Search many of our Ecommerce products</p>
@@ -14,4 +14,62 @@
       </div>
     </div>
   </div>
+</div>
+
+<div class="container">
+  <div class="row" id="searchResults">
+    <% for(let i = 0; i < products.length; i++) { %>
+      <div class="col-sm-4">
+        <a href="/product/<%= products[i]._id %>">
+          <div class="thumbnail">
+            <img src="<%= products[i].image %>" alt="product image" />
+            <div class="caption">
+              <h3><%= products[i].name %></h3>
+              <p><%= products[i].category.name %></h3>
+              <p>$<%= products[i].price %></p>
+              <p><%= page %></p>
+            </div>
+          </div>
+        </a>
+      </div>
+    <% } %>
+  </div>
+
+  <nav aria-label="Page navigation">
+    <ul class="pagination text-center" 
+    style="padding-bottom: 70px">
+      <% for(let i = 1; i <= pages; i++) { %>
+
+        <% if(i === 1) { %>
+
+          <% if(i == page) { %>
+
+            <li class="active"><a href="/" ><%= i %></a></li>
+
+          <% } else { %>
+
+            <li ><a href="/" ><%= i %></a></li>
+
+          <% } %>
+
+        <% } else if(i == page) { %>
+
+          <li class="active">
+            <a href="/page/<%= i %>"><%= i %></a>
+          </li>
+
+        <% } else { %>
+
+          <li>
+            <a href="/page/<%= i %>"><%= i %></a>
+          </li>
+
+        <% } %>
+      
+
+      <% } %>
+    </ul>
+  </nav>
+
+
 </div>

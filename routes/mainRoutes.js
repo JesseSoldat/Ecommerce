@@ -19,10 +19,15 @@ module.exports = (app, Category, Product) => {
 
   app.get('/', (req, res, next) => {
     if(req.user) {
-      res.render('main/product-main');
+      paginate(Product, req, res, next);
     } else {
       res.render('main/home');
     }
+  });
+
+  app.get('/page/:page', (req, res, next) => {
+    const page = req.params.page;
+    paginate(Product, req, res, next, page);
   });
 
   app.get('/products/:id', (req, res, next) => {
@@ -71,4 +76,25 @@ module.exports = (app, Category, Product) => {
       });
     }
   });
+}
+
+function paginate(Product, req, res, next, page = 1) {
+  const perPage = 6;
+
+  Product
+    .find({})
+    .skip(perPage * page)
+    .limit(perPage)
+    .populate('category')
+    .exec((err, products) => {
+      if(err) return next(err);
+      Product.count().exec((err, count) => {
+        if(err) return next(err);
+        res.render('main/product-main', {
+          page,
+          products,
+          pages: count / perPage    
+        });
+      });
+    });
 }
