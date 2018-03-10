@@ -1,4 +1,16 @@
 module.exports = (app, Category, Product) => {
+
+  Product.createMapping(function(err, mapping) {
+    if (err) {
+      console.log("error creating mapping");
+      console.log(err);
+    } else {
+      console.log("Mapping created");
+      console.log(mapping);
+    }
+  });
+
+
   app.get('/', (req, res, next) => {
     res.render('main/home');
   });

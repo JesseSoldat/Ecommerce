@@ -54,6 +54,7 @@ app.use(async (req, res, next) => {
 app.engine('ejs', engine);
 app.set('view engine', 'ejs');
 
+
 require('./routes/authRoutes')(app, User, passport);
 require('./routes/mainRoutes')(app, Category, Product);
 require('./routes/adminRoutes')(app, Category, Product);
