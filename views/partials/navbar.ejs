@@ -10,9 +10,16 @@
       <a class="navbar-brand" href="/">Ecommerce</a>
     </div>
     <div class="collapse navbar-collapse" id="collapse">
-        <ul class="nav navbar-nav">
-          
-        </ul>
+
+        <form action="/search" method="post" class="navbar-form navbar-left">
+          <div class="form-group">
+            <input type="text" class="form-control" name="q" placeholder="Search..." />
+            <button class="btn btn-default" type="submit">
+              Submit
+            </button>
+          </div>
+        </form>
+        <!-- <ul class="nav navbar-nav"></ul> -->
     
         <ul class="nav navbar-nav navbar-right">
           <% if(user) { %>

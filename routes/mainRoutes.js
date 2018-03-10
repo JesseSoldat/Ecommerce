@@ -1,6 +1,6 @@
 module.exports = (app, Category, Product) => {
 
-  Product.createMapping(function(err, mapping) {
+  Product.createMapping((err, mapping) => {
     if (err) {
       console.log("error creating mapping");
       console.log(err);
@@ -10,6 +10,12 @@ module.exports = (app, Category, Product) => {
     }
   });
 
+  const stream = Product.synchronize();
+  let count = 0;
+
+  stream.on('data', () => count++);
+  stream.on('close', () => console.log(`Indexed ${count} documents`));
+  stream.on('error', () => console.log(err));
 
   app.get('/', (req, res, next) => {
     res.render('main/home');
@@ -39,6 +45,26 @@ module.exports = (app, Category, Product) => {
     } 
     catch(err) {
       return next(err);
+    }
+  });
+
+  app.post('/search', (req, res, next) => {
+    res.redirect(`/search?q=${req.body.q}`);
+  });
+
+  app.get('/search', (req, res, next) => {
+    const query = req.query.q;
+    if(req.query.q) {
+      Product.search({
+        query_string: { query }
+      }, (err, results) => {
+        if(err) return next(err);
+        const data = results.hits.hits.map(hit => hit);
+        res.render('main/search-results', {
+          query,
+          data
+        });
+      });
     }
   });
 }
