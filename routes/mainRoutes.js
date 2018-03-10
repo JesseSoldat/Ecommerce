@@ -18,7 +18,11 @@ module.exports = (app, Category, Product) => {
   stream.on('error', () => console.log(err));
 
   app.get('/', (req, res, next) => {
-    res.render('main/home');
+    if(req.user) {
+      res.render('main/product-main');
+    } else {
+      res.render('main/home');
+    }
   });
 
   app.get('/products/:id', (req, res, next) => {
