@@ -24,14 +24,12 @@ module.exports = (app, Category, Product) => {
 
   app.post('/api/search', async (req, res, next) => {
     const {search_term} = req.body;
-    try {
-      const results = await Product.search({
-        query_string: { query: search_term}
-      }); 
-      res.json(results);
-    } 
-    catch(err) {
+    
+    Product.search({
+      query_string: { query: search_term }
+    }, function(err, results) {
       if (err) return next(err);
-    }
+      res.json(results);
+    });
   });
 }

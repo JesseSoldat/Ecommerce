@@ -57,7 +57,7 @@ module.exports = (app, Category, Product) => {
     }
   });
 
-  app.post('/search', (req, res, next) => {
+  app.post('/search', (req, res, next) => {  
     res.redirect(`/search?q=${req.body.q}`);
   });
 
