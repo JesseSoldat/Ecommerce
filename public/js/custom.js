@@ -1,7 +1,6 @@
 $(function() {
   $('#search').keyup(function() {
     const search_term = $(this).val();
-    console.log(search_term)
 
     $.ajax({
       method: 'POST',
@@ -41,7 +40,38 @@ $(function() {
   });
 
 
+  $(document).on('click', '#plus', (e) => {
+    e.preventDefault();
+    //get previous
+    let priceValue = parseFloat($('#priceValue').val());
+    let quantity = parseInt($('#quantity').val());
+    //increment
+    priceValue += parseFloat($('#priceHidden').val());
+    quantity += 1;
+    //update the DOM
+    $('#quantity').val(quantity);
+    $('#priceValue').val(priceValue.toFixed(2));
+    $('#total').html(quantity);
+  });
+
+  $(document).on('click', '#minus', (e) => {
+    e.preventDefault();
+    //get previous
+    let priceValue = parseFloat($('#priceValue').val());
+    let quantity = parseInt($('#quantity').val());
+    //decrement
+    if(quantity == 1) {
+      priceValue = parseFloat($('#priceHidden').val());
+      quantity = 1;
+    } else {
+      priceValue -= parseFloat($('#priceHidden').val());
+      quantity -= 1;
+    }
+    //update the DOM
+    $('#quantity').val(quantity);
+    $('#priceValue').val(priceValue.toFixed(2));
+    $('#total').html(quantity);
+  });
 
 
-
-})
+});

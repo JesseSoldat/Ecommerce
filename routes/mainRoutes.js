@@ -1,4 +1,4 @@
-module.exports = (app, Category, Product) => {
+module.exports = (app, Category, Product, Cart) => {
 
   Product.createMapping((err, mapping) => {
     if (err) {
@@ -50,10 +50,30 @@ module.exports = (app, Category, Product) => {
   app.get('/product/:id', async (req, res, next) => {
     try {
       const product = await Product.findById({_id: req.params.id});
+      // console.log(product);
+      
       res.render('main/product', {product});
     } 
     catch(err) {
       return next(err);
+    }
+  });
+
+  app.post('/product/:id', async (req, res, next) => {
+    try {
+     const cart = await Cart.findOne({owner: req.user._id});
+     const price = parseFloat(req.body.priceValue);
+     cart.items.push({
+       item: req.body.product_id,
+       price,
+       quantity: parseInt(req.body.quantity)
+     });
+     cart.total = (cart.total + price),toFixed(2); 
+     await cart.save();
+     res.redirect('/cart');
+    } 
+    catch (err) {
+      next(err);
     }
   });
 
@@ -75,6 +95,18 @@ module.exports = (app, Category, Product) => {
         });
       });
     }
+  });
+
+  app.get('/cart', (req, res, next) => {
+    Cart
+      .findOne({owner: req.user._id})
+      .populate('items.item')
+      .exec((err, foundCart) => {
+        if(err) return next(err);
+        res.render('main/cart', {
+          foundCart
+        });
+      });
   });
 }
 

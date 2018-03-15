@@ -13,6 +13,8 @@ const engine = require('ejs-mate');
 const User = require('./models/user');
 const Category = require('./models/category');
 const Product = require('./models/product');
+const Cart = require('./models/cart');
+const cartAmount = require('./middleware/cart-amount');
 
 const app = express();
 
@@ -41,6 +43,7 @@ app.use((req, res, next) => {
   res.locals.user = req.user;
   next();
 });
+app.use(cartAmount);
 app.use(async (req, res, next) => {
   try {
     const categories = await Category.find({});
@@ -55,8 +58,8 @@ app.engine('ejs', engine);
 app.set('view engine', 'ejs');
 
 
-require('./routes/authRoutes')(app, User, passport);
-require('./routes/mainRoutes')(app, Category, Product);
+require('./routes/authRoutes')(app, User, passport, Cart);
+require('./routes/mainRoutes')(app, Category, Product, Cart);
 require('./routes/adminRoutes')(app, Category, Product);
 require('./api/api')(app, Category, Product);
 

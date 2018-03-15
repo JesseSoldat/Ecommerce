@@ -4,6 +4,10 @@ body {
   height: 100vh;
 }
 
+.cartBadge {
+  margin-left: -15px;
+}
+
 .jumbotron-navbar-gap {
   padding-top: 70px;
 }

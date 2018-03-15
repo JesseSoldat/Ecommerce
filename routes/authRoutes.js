@@ -1,6 +1,6 @@
 const passportService = require('../services/passport');
 
-module.exports = (app, User, passport) => {
+module.exports = (app, User, passport, Cart) => {
 
   app.get('/signup', (req, res, next) => {
     res.render('accounts/signup', {
@@ -23,6 +23,9 @@ module.exports = (app, User, passport) => {
         res.redirect('/signup');
       }
       await user.save();
+      const cart = new Cart();
+      cart.owner = user._id;
+      await cart.save();
       req.logIn(user, (err, done) => {
         res.redirect('/profile');  
       });
@@ -40,17 +43,17 @@ module.exports = (app, User, passport) => {
     });
   });
 
-  app.get('/logout', (req, res, next) => {
-    req.logout(() => {
-      res.redirect('/');
-    });
-  });
-
   app.post('/login', passport.authenticate('local-login', {
     successRedirect: '/profile',
     failureRedirect: '/login',
     failureFlash: true
   }));
+
+  app.get('/logout', (req, res, next) => {
+    req.logout(() => {
+      res.redirect('/');
+    });
+  });
 
   app.get('/profile', (req, res, next) => {
     res.render('accounts/profile');
