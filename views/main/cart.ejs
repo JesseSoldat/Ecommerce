@@ -1,8 +1,10 @@
 <% layout('layout') -%>
 
-<div class="container">
+<div class="container default-navbar-gap">
   <div class="row">
-    <div class="col-sm-6">
+    <div class="col-sm-8 col-sm-offset-2">
+      <% include ../partials/success %>
+
       <% for (var i = 0; i < foundCart.items.length; i++) { %>
         <div class="list-group">
           <span class="list-group-item">
@@ -23,10 +25,21 @@
               </div>
 
               <div class="col-sm-3">
-                
-              </div>
-              
+                <p class="list-group-item-heading">
+                  <%= foundCart.items[i].quantity %>
+                </p>
+                <p>
+                  <%= foundCart.items[i].price %>
+                </p>
 
+                <form method="post" action="/remove">
+                  <input type="hidden" name="item" 
+                    value="<%= foundCart.items[i]._id %>" />
+                  <input type="hidden" name="price" 
+                    value="<%= foundCart.items[i].price %>" />
+                  <button type="submit">Remove</button>
+                </form>
+              </div>
             </div>
           </span>
         </div>

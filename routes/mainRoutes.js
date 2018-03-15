@@ -68,7 +68,7 @@ module.exports = (app, Category, Product, Cart) => {
        price,
        quantity: parseInt(req.body.quantity)
      });
-     cart.total = (cart.total + price),toFixed(2); 
+     cart.total = (cart.total + price).toFixed(2); 
      await cart.save();
      res.redirect('/cart');
     } 
@@ -102,11 +102,27 @@ module.exports = (app, Category, Product, Cart) => {
       .findOne({owner: req.user._id})
       .populate('items.item')
       .exec((err, foundCart) => {
+        console.log('get /cart', foundCart);       
         if(err) return next(err);
         res.render('main/cart', {
-          foundCart
+          foundCart,
+          success: req.flash('success')
         });
       });
+  });
+
+  app.post('/remove', async (req, res, next) => {
+    try {
+      const foundCart = await Cart.findOne({owner: req.user._id});
+      foundCart.items.pull(String(req.body.item));
+      foundCart.total = (foundCart.total - parseFloat(req.body.price)).toFixed(2);
+      await foundCart.save();
+      req.flash('success', 'Successfully removed item');
+      res.redirect('/cart');
+    } 
+    catch (err) {
+      next(err);
+    }
   });
 }
 
