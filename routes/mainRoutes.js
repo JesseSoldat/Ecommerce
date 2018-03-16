@@ -1,5 +1,5 @@
 
-module.exports = (app, User, Category, Product, Cart, strip, requireLogin) => {
+module.exports = (app, User, Category, Product, Cart, stripe, requireLogin) => {
 
   Product.createMapping((err, mapping) => {
     if (err) {
@@ -20,39 +20,49 @@ module.exports = (app, User, Category, Product, Cart, strip, requireLogin) => {
 
   app.get('/', (req, res, next) => {
     if(req.user) {
-      paginate(Product, req, res, next);
+      const view = 'main/product-main'; 
+      const id = '';
+      paginate(Product, req, res, next, view, id);
     } else {
       res.render('main/home');
     }
   });
 
   app.get('/page/:page',  (req, res, next) => {
-    const page = req.params.page;
-    paginate(Product, req, res, next, page);
+    const {page} = req.params;
+    const view = 'main/product-main';
+    const id = '';    
+    paginate(Product, req, res, next, view, id, page);
   });
+
+  app.get('/category/:id/page/:page', (req, res, next) => {
+    const {page, id} = req.params;
+    const view = `main/category`;
+    paginate(Product, req, res, next, view, id, page);    
+  });
+
 
   app.get('/products/:id', (req, res, next) => {
     const {id} = req.params;
- 
-    Product
-      .find({category: id})
-      //if data type is an object _id
-      //can get all the data in category as well
-      //.category.name
-      .populate('category')
-      .exec((err, products) => {
-        if(err) return next(err);
-        res.render('main/category', {
-          products
-        })
-      });
+    const view = `main/category`;
+    paginate(Product, req, res, next, view, id);
+    // Product
+    //   .find({category: id})
+    //   //if data type is an object _id
+    //   //can get all the data in category as well
+    //   //.category.name
+    //   .populate('category')
+    //   .exec((err, products) => {
+    //     if(err) return next(err);
+    //     res.render('main/category', {
+    //       products
+    //     })
+    //   });
   });
 
   app.get('/product/:id', async (req, res, next) => {
     try {
       const product = await Product.findById({_id: req.params.id});
-      // console.log(product);
-      
       res.render('main/product', {product});
     } 
     catch(err) {
@@ -133,7 +143,7 @@ module.exports = (app, User, Category, Product, Cart, strip, requireLogin) => {
     const amount = Math.round(req.body.amount * 100);
     const {_id} = req.user;   
     // console.log('stripeToken', stripeToken);
-    // console.log('amount', amount);
+    console.log('amount', amount);
     // console.log('_id', _id);
   
     try {
@@ -168,8 +178,8 @@ module.exports = (app, User, Category, Product, Cart, strip, requireLogin) => {
 
 }
 
-function paginate(Product, req, res, next, page = 1) {
-  const perPage = 6;
+function paginate(Product, req, res, next, view, id, page = 1) {
+  const perPage = 8;
 
   Product
     .find({})
@@ -180,10 +190,12 @@ function paginate(Product, req, res, next, page = 1) {
       if(err) return next(err);
       Product.count().exec((err, count) => {
         if(err) return next(err);
-        res.render('main/product-main', {
+        res.render(view, {
           page,
           products,
-          pages: count / perPage    
+          pages: count / perPage,
+          view,
+          id
         });
       });
     });

@@ -10,7 +10,7 @@
 
     <div class="col-md-4">
       <h3><%= product.name %></h3>
-      <h1><%= product.price %></h1>
+      <h1><%= product.price.toFixed(2) %></h1>
 
       <form action="/product/<%= product._id %>" method="post">
         <div class="btn-group" role="group">
@@ -42,7 +42,7 @@
           <input type="text" name="priceValue" id="priceValue" 
             class="form-control"
             style="margin-top: 5px"
-            value="<%= product.price %>" />
+            value="<%= product.price.toFixed(2) %>" />
 
           <% if (user)  { %>
             <button class="btn btn-primary" type="submit" style="margin-top: 5px">
