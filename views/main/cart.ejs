@@ -20,16 +20,16 @@
 
               <div class="col-sm-6">
                 <p class="list-group-item-heading">
-                  <%= foundCart.items[i].item.name %>
+                  <strong>Item Description: </strong><%= foundCart.items[i].item.name %>
                 </p>
               </div>
 
               <div class="col-sm-3">
                 <p class="list-group-item-heading">
-                  <%= foundCart.items[i].quantity %>
+                  <strong>Quantity: </strong><%= foundCart.items[i].quantity %>
                 </p>
                 <p>
-                  <%= foundCart.items[i].price.toFixed(2) %>
+                  <strong>Total Cost: </strong>$<%= foundCart.items[i].price.toFixed(2) %>
                 </p>
 
                 <form method="post" action="/remove">

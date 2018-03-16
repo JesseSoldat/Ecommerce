@@ -6,6 +6,12 @@ const crypto = require('crypto');
 const UserSchema = new Schema({
   email: { type: String, unique: true, lowercase: true},
   password: { type: String, minlength: 5 },
+  
+  facebookId: { type: String },
+  tokens: Array,
+
+  googleId: { type: String },
+
   profile: {
     name: { type: String, default: '' },
     picture: { type: String, default: '' }
@@ -13,7 +19,8 @@ const UserSchema = new Schema({
   address: String,
   history: [{
     paid: { type: Number, default: 0 },
-    item: { type: Schema.Types.ObjectId, ref: 'Product'}
+    item: { type: Schema.Types.ObjectId, ref: 'Product'},
+    quantity: { type: Number, default: 0 }
   }]
 });
 

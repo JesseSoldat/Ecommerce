@@ -101,7 +101,7 @@ module.exports = (app, User, Category, Product, Cart, stripe, requireLogin) => {
         if(err) return next(err);
         const data = results.hits.hits.map(hit => hit);
         res.render('main/search-results', {
-          query,
+          query, 
           data
         });
       });

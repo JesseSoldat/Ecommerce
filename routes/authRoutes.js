@@ -49,6 +49,20 @@ module.exports = (app, User, passport, Cart, requireLogin) => {
     failureFlash: true
   }));
 
+  app.get('/auth/facebook', passport.authenticate('facebook', {scope: ['email'] }));
+
+  app.get('/auth/facebook/callback', passport.authenticate('facebook', {
+    successRedirect: '/profile',
+    failureRedirect: '/login'
+  }));
+
+  app.get('/auth/google', passport.authenticate('google', {scope: ['email', 'profile']}));
+
+  app.get('/auth/google/callback', passport.authenticate('google', {
+    successRedirect: '/profile',
+    failureRedirect: '/login'
+  }));
+
   app.get('/logout', (req, res, next) => {
     req.logout(() => {
       console.log('Did LOGOUT');  
@@ -62,7 +76,13 @@ module.exports = (app, User, passport, Cart, requireLogin) => {
   });
 
   app.get('/profile', requireLogin, (req, res, next) => {
-    res.render('accounts/profile');
+    const {_id} = req.user;
+    User.findOne({_id})
+      .populate('history.item')
+      .exec((err, foundUser) => {
+        if(err) return next(err);
+        res.render('accounts/profile', { foundUser }); 
+      });
   });
 
   app.get('/edit-profile', (req, res, next) => {
