@@ -1,4 +1,5 @@
-module.exports = (app, Category, Product, Cart) => {
+
+module.exports = (app, User, Category, Product, Cart, strip, requireLogin) => {
 
   Product.createMapping((err, mapping) => {
     if (err) {
@@ -25,7 +26,7 @@ module.exports = (app, Category, Product, Cart) => {
     }
   });
 
-  app.get('/page/:page', (req, res, next) => {
+  app.get('/page/:page',  (req, res, next) => {
     const page = req.params.page;
     paginate(Product, req, res, next, page);
   });
@@ -97,12 +98,12 @@ module.exports = (app, Category, Product, Cart) => {
     }
   });
 
-  app.get('/cart', (req, res, next) => {
+  app.get('/cart', requireLogin, (req, res, next) => {
     Cart
       .findOne({owner: req.user._id})
       .populate('items.item')
       .exec((err, foundCart) => {
-        console.log('get /cart', foundCart);       
+        // console.log('get /cart', foundCart);     
         if(err) return next(err);
         res.render('main/cart', {
           foundCart,
@@ -124,6 +125,47 @@ module.exports = (app, Category, Product, Cart) => {
       next(err);
     }
   });
+
+  app.post('/payment', async (req, res, next) => {
+    //TESTING NUMBER 4242424242424242
+    console.log('req', req.body);
+    const {stripeToken} = req.body;
+    const amount = Math.round(req.body.amount * 100);
+    const {_id} = req.user;   
+    // console.log('stripeToken', stripeToken);
+    // console.log('amount', amount);
+    // console.log('_id', _id);
+  
+    try {
+      const charge = await stripe.charges.create({
+        amount,
+        currency: 'usd',
+        description: 'Purchase on Ecommerce site',
+        source: stripeToken
+      });
+  
+      const cart = await Cart.findOne({owner: _id});
+      const user = await User.findOne({_id});
+      if(user && cart) {
+        cart.items.forEach(({item, price}) => {
+          user.history.push({
+            item,
+            paid: price
+          });
+        })
+      }
+      await user.save();
+      await Cart.update({owner: _id}, {
+        $set: { items: [], total: 0 }
+      });
+      res.redirect('/profile');
+    } 
+    catch (err) {
+      console.log('ERROR DURING STRIPE PAYMENT', err);
+      res.send(err);
+    } 
+  });
+
 }
 
 function paginate(Product, req, res, next, page = 1) {

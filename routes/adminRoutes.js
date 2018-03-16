@@ -1,5 +1,5 @@
-module.exports = (app, Category) => {
-  app.get('/add-category', (req, res, next) => {
+module.exports = (app, Category, requireLogin) => {
+  app.get('/add-category', requireLogin, (req, res, next) => {
     res.render('admin/add-category', {
       success: req.flash('success'),
       errors: req.flash('error')

@@ -1,6 +1,6 @@
 const passportService = require('../services/passport');
 
-module.exports = (app, User, passport, Cart) => {
+module.exports = (app, User, passport, Cart, requireLogin) => {
 
   app.get('/signup', (req, res, next) => {
     res.render('accounts/signup', {
@@ -51,11 +51,17 @@ module.exports = (app, User, passport, Cart) => {
 
   app.get('/logout', (req, res, next) => {
     req.logout(() => {
-      res.redirect('/');
+      console.log('Did LOGOUT');  
     });
+    req.session.destroy(function (err) {
+      if (err) { return next(err); }
+      console.log('authenticated', req.isAuthenticated()); 
+    });
+    res.redirect('/');
+    
   });
 
-  app.get('/profile', (req, res, next) => {
+  app.get('/profile', requireLogin, (req, res, next) => {
     res.render('accounts/profile');
   });
 

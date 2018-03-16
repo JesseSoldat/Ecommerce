@@ -6,6 +6,14 @@ body {
 .cartBadge {
   margin-left: -15px;
 }
+.panel-title {
+  width: 65%; 
+  display: inline-block;
+}
+.paymentTypes {
+  width: 30%;
+  display: inline-block;  
+}
 
 .product-image {
   width: 100%;
